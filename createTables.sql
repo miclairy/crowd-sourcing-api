@@ -21,7 +21,7 @@ PRIMARY KEY (reward_id)
 );
 
 CREATE TABLE Project (
-project_id integer NOT NULL AUTO_INCREMENT,
+id integer NOT NULL AUTO_INCREMENT,
 title varchar(50) NOT NULL UNIQUE,
 subtitle varchar(200),
 description varchar(200),
@@ -33,7 +33,7 @@ target integer NOT NULL,
 currentPledged integer NOT NULL DEFAULT 0,
 numberOfBackers integer NOT NULL DEFAULT 0,
 FOREIGN KEY (reward) REFERENCES Reward(reward_id),
-PRIMARY KEY (project_id)
+PRIMARY KEY (id)
 );
 
 CREATE TABLE Creators (

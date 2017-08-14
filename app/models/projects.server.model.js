@@ -5,7 +5,7 @@
 const db = require('../../config/db.js');
 
 exports.getAll = function (done) {
-    db.get().query('SELECT * FROM USERS', function (err, rows) {
+    db.get().query('SELECT project_id, title, subtitle, imageUri FROM Project', function (err, rows) {
         if (err) return done({"ERROR": "Error selecting"});
         return done(rows);
     })
@@ -18,12 +18,21 @@ exports.getOne = function (userId, done) {
     })
 };
 
-exports.insert = function (username, done) {
-    let values = [username];
-
-    db.get().query('INSERT INTO USERS (username) VALUES ?', values, function (err, result) {
-        if (err) return done(err);
-        done(result);
+exports.insert = function (project, done) {
+    let values = [project.title, project.subtitle, project.description, project.imageUri, project.rewardsId];
+    let results2 = "";
+    db.get().query('INSERT INTO Reward (id, amount, description) VALUES ?', values, function (err, result) {
+        if (err) {
+            return done(err);
+        }
+        else {
+            values = [project.rewardsId, project.amount, project.rewardDescription];
+            result2 = db.get().query('INSERT INTO Project (title, subtitle, description, imageUri, target, reward) VALUES ?', values, function (err, result2) {
+                if (err) return done(err);
+                return result2;
+            });
+        }
+        done(result + result2);
     });
 };
 
