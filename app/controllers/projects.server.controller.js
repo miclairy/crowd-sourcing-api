@@ -11,7 +11,16 @@ exports.list = function (req, res){
 };
 
 exports.create = function (req, res){
-    console.log(req.body);
+    console.log(req.body.rewards);
+    let rewards = [];
+    for (let i = 0; i < req.body.rewards.length; i++) {
+        let reward_data = {
+            "rewardsId": req.body.rewards[i].id,
+            "amount": req.body.rewards[i].amount,
+            "rewardDescription": req.body.rewards[i].description
+        };
+        rewards.push(reward_data);
+    }
     let project_data = {
         "title": req.body.title,
         "subtitle": req.body.subtitle,
@@ -19,18 +28,18 @@ exports.create = function (req, res){
         "imageUri": req.body.imageUri,
         "target": req.body.target,
         "creators": req.body.creators,
-        "rewardsId": req.body.rewards.id,
-        "amount": req.body.rewards.amount,
-        "rewardDescription": req.body.rewards.description
+        "rewards" : rewards
     };
+
+    console.log(project_data);
 
     Project.insert(project_data, function (result) {
         res.json(result);
     })
 };
 
-exports.read = function (req, res){
-    Project.getOne(req.params.ProjectId, function (result) {
+exports.details = function (req, res){
+    Project.getDetails(req.params.id, function (result) {
         res.json(result);
     });
 };
@@ -49,10 +58,6 @@ exports.delete = function (req, res){
     Project.remove([req.params.ProjectId.toString()], function (result) {
         res.json(result);
     })
-};
-
-exports.details = function (req, res){
-    return null;
 };
 
 exports.image = function (req, res){

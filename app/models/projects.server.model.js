@@ -5,35 +5,39 @@
 const db = require('../../config/db.js');
 
 exports.getAll = function (done) {
-    db.get().query('SELECT project_id, title, subtitle, imageUri FROM Project', function (err, rows) {
+    db.get().query('SELECT id, title, subtitle, imageUri FROM Project', function (err, rows) {
         if (err) return done({"ERROR": "Error selecting"});
         return done(rows);
     })
 };
 
-exports.getOne = function (userId, done) {
-    db.get().query('SELECT * FROM USERS WHERE user_id = ?', userId, function (err, rows) {
-        if (err) return done({"ERROR": "Error selecting"});
+exports.getDetails = function (project_id, done) {
+    db.get().query('SELECT * FROM Project WHERE id = ?', project_id, function (err, rows) {
+        if (err) return done(err);
         return done(rows);
     })
 };
 
 exports.insert = function (project, done) {
-    let values = [project.title, project.subtitle, project.description, project.imageUri, project.rewardsId];
-    let results2 = "";
-    db.get().query('INSERT INTO Reward (id, amount, description) VALUES ?', values, function (err, result) {
-        if (err) {
-            return done(err);
-        }
-        else {
-            values = [project.rewardsId, project.amount, project.rewardDescription];
-            result2 = db.get().query('INSERT INTO Project (title, subtitle, description, imageUri, target, reward) VALUES ?', values, function (err, result2) {
-                if (err) return done(err);
-                return result2;
-            });
-        }
-        done(result + result2);
+    let rewards = "";
+
+    let values = [project.title, project.subtitle, project.description, project.imageUri, project.target, 5];
+    db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
+        if (err) return done(err);
+        done(rows)
     });
+
+    // for (let i = 0; i < project.rewards.length; i++) {
+    //     let values = [project.rewards[i].rewardsId, project.rewards[i].amount, project.rewards[i].rewardDescription, rows.];
+    //     db.get().query("INSERT INTO Reward (reward_id, amount, description) VALUES (?, ?, ?)", values, function (err, result) {
+    //         if (err) {
+    //             return done(err);
+    //         }
+    //         rewards += result;
+    //     });
+    // }
+
+
 };
 
 exports.alter = function (user_data, done) {

@@ -7,10 +7,12 @@ const express = require('express'),
 
 module.exports = function(){
     const app = express();
-    app.use(bodyParser.urlencoded({
+    app.use(bodyParser.json({
         extended: true
         }
     ));
+
+    //app.use(bodyParser.json);
 
     require('../app/routes/projects.server.routes.js')(app);
 
