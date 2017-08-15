@@ -12,33 +12,106 @@ exports.getAll = function (done) {
 };
 
 exports.getDetails = function (project_id, done) {
-    db.get().query('SELECT * FROM Project WHERE id = ?', project_id, function (err, rows) {
+    db.get().query('SELECT * FROM Project WHERE id = ?', project_id, function (err, projects) {
         if (err) return done(err);
-        return done(rows);
-    })
-};
 
-exports.insert = function (project, done) {
-    let rewards = "";
+        db.get().query('SELECT * FROM Reward WHERE project = ?', project_id, function (err, rewards) {
+            if (err) return done(err);
 
-    let values = [project.title, project.subtitle, project.description, project.imageUri, project.target, 5];
-    db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
-        if (err) return done(err);
-        done(rows)
+            db.get().query('SELECT * FROM Creators WHERE project = ?', project_id, function (err, creators) {
+                if (err) return done(err);
+
+                db.get().query('SELECT * FROM Backers WHERE project_id = ?', project_id, function (err, backers) {
+                    if (err) return done(err);
+                    let result = {};
+                    let project = {};
+                    let data = {};
+                    let progress = {};
+                    for (let i = 0; i < projects.length; i++) {
+                        project.id = projects[i].id;
+                        project.creationDate = projects[i].creationDate;
+                        data.title = projects[i].title;
+                        data.subtitle = projects[i].subtitle;
+                        data.descrpition = projects[i].description;
+                        data.imageUri = projects[i].imageUri;
+                        data.target = projects[i].target;
+                        progress.target = projects[i].target;
+                        progress.currentPledged = projects[i].currentPledged;
+                        progress.numberOfBackers = projects[i].numberOfBackers;
+                    }
+
+                    data.creators = [];
+                    for (let j = 0; j < creators.length; j++) {
+                        let creator = {};
+                        creator.id = creators[j].id;
+                        creator.name = creators[j].name;
+                        data.creators.push(creator);
+                    }
+
+                    data.rewards = [];
+                    for (let j = 0; j < rewards.length; j++) {
+                        let reward = {};
+                        reward.id = rewards[j].reward_id;
+                        reward.amount = rewards[j].amount;
+                        reward.description = rewards[j].description;
+                        data.rewards.push(reward);
+                    }
+                    project.data = data;
+                    result.project = project;
+                    result.progress = progress;
+
+                    result.backers = [];
+                    for (let j = 0; j < rewards.length; j++) {
+                        let backer = {};
+                        backer.name = backers[j];
+                        backer.amount = backers[j];
+                    }
+                    result.backers = backers;
+                    done(result);
+                });
+            });
+        });
     });
 
-    // for (let i = 0; i < project.rewards.length; i++) {
-    //     let values = [project.rewards[i].rewardsId, project.rewards[i].amount, project.rewards[i].rewardDescription, rows.];
-    //     db.get().query("INSERT INTO Reward (reward_id, amount, description) VALUES (?, ?, ?)", values, function (err, result) {
-    //         if (err) {
-    //             return done(err);
-    //         }
-    //         rewards += result;
-    //     });
-    // }
+
+};
+
+exports.insert = function (project_data, done) {
+   // console.log(project);
+    let project = project_data;
+    let values = [project.title, project.subtitle, project.description, project.imageUri, project.target, 5];
+
+
+    db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
+        let result = rows;
+        if (err) return done(err);
+        for (let i = 0; i < project.rewards.length; i++) {
+
+            insertRewards(project, result, i, function (success) {
+                result = success;
+                done(result);
+            })
+        }
+
+
+    });
 
 
 };
+
+function insertRewards (project, rows, i, success){
+    rows.rewards = [];
+    let values2 = [project.rewards[i].rewardsId, project.rewards[i].amount, project.rewards[i].rewardDescription, rows.insertId];
+
+    db.get().query("INSERT INTO Reward (reward_id, amount, description, project) VALUES (?, ?, ?, ?)", values2, function (err, rewardResult) {
+        if (err) {
+            return success(err);
+        }
+        rows.rewards.push(rewardResult);
+        success(rows);
+    });
+
+}
 
 exports.alter = function (user_data, done) {
     let values = [user_data.username, user_data.user_id];

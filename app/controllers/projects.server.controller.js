@@ -11,7 +11,6 @@ exports.list = function (req, res){
 };
 
 exports.create = function (req, res){
-    console.log(req.body.rewards);
     let rewards = [];
     for (let i = 0; i < req.body.rewards.length; i++) {
         let reward_data = {
@@ -30,9 +29,6 @@ exports.create = function (req, res){
         "creators": req.body.creators,
         "rewards" : rewards
     };
-
-    console.log(project_data);
-
     Project.insert(project_data, function (result) {
         res.json(result);
     })
