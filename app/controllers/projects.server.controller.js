@@ -20,14 +20,22 @@ exports.create = function (req, res){
         };
         rewards.push(reward_data);
     }
+    let creators = [];
+    for (let i = 0; i < req.body.creators.length; i++) {
+        let creator_data = {
+            "id": req.body.creators[i].id,
+            "name": req.body.creators[i].name,
+        };
+        creators.push(creator_data);
+    }
     let project_data = {
         "title": req.body.title,
         "subtitle": req.body.subtitle,
         "description": req.body.description,
         "imageUri": req.body.imageUri,
         "target": req.body.target,
-        "creators": req.body.creators,
-        "rewards" : rewards
+        "rewards" : rewards,
+        "creators" : creators
     };
     Project.insert(project_data, function (result) {
         res.json(result);

@@ -63,8 +63,10 @@ exports.getDetails = function (project_id, done) {
                     result.backers = [];
                     for (let j = 0; j < rewards.length; j++) {
                         let backer = {};
-                        backer.name = backers[j];
-                        backer.amount = backers[j];
+                        if (backer.anonymous == 0) {
+                            backer.name = backers[j];
+                            backer.amount = backers[j];
+                        }
                     }
                     result.backers = backers;
                     done(result);
@@ -89,10 +91,20 @@ exports.insert = function (project_data, done) {
 
             insertRewards(project, result, i, function (success) {
                 result = success;
-                done(result);
-            })
-        }
+                if (i == project.rewards.length - 1){
+                    for (let i = 0; i < project.creators.length; i++) {
 
+                        insertCreators(project, result, i, function (success) {
+                            result = success;
+
+                        });
+                    }
+                    if (i == project.creators.length - 1){
+                        done(result);
+                    }
+                }
+            });
+        }
 
     });
 
@@ -110,8 +122,22 @@ function insertRewards (project, rows, i, success){
         rows.rewards.push(rewardResult);
         success(rows);
     });
-
 }
+
+function insertCreators (project, rows, i, success){
+    rows.creators = [];
+
+    let values2 = [project.creators[i].name, project.creators[i].id, rows.insertId];
+
+    db.get().query("INSERT INTO Creators (name, user_id, project) VALUES (?, ?, ?, ?)", values2, function (err, rewardResult) {
+        if (err) {
+            return success(err);
+        }
+        rows.creators.push(rewardResult);
+        success(rows);
+    });
+}
+
 
 exports.alter = function (user_data, done) {
     let values = [user_data.username, user_data.user_id];
