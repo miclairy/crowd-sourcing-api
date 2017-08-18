@@ -86,7 +86,7 @@ exports.insert = function (project_data, done) {
 
     db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
         let result = rows;
-        if (err) return done(err);
+        if (err) return done(400, err);
         for (let i = 0; i < project.rewards.length; i++) {
 
             insertRewards(project, result, i, function (success) {
@@ -96,12 +96,13 @@ exports.insert = function (project_data, done) {
 
                         insertCreators(project, result, i, function (success) {
                             result = success;
-
+                            if (i == project.creators.length - 1){
+                                done(result);
+                            }
                         });
+
                     }
-                    if (i == project.creators.length - 1){
-                        done(result);
-                    }
+
                 }
             });
         }
@@ -129,7 +130,7 @@ function insertCreators (project, rows, i, success){
 
     let values2 = [project.creators[i].name, project.creators[i].id, rows.insertId];
 
-    db.get().query("INSERT INTO Creators (name, user_id, project) VALUES (?, ?, ?, ?)", values2, function (err, rewardResult) {
+    db.get().query("INSERT INTO Creators (name, user_id, project) VALUES (?, ?, ?)", values2, function (err, rewardResult) {
         if (err) {
             return success(err);
         }

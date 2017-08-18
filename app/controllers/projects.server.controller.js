@@ -38,6 +38,7 @@ exports.create = function (req, res){
         "creators" : creators
     };
     Project.insert(project_data, function (result) {
+
         res.json(result);
     })
 };
