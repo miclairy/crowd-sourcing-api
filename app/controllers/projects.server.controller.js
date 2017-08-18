@@ -37,8 +37,13 @@ exports.create = function (req, res){
         "rewards" : rewards,
         "creators" : creators
     };
-    Project.insert(project_data, function (result) {
-
+    Project.insert(project_data, function (result, status) {
+        res.status(status);
+        if (status == 400){
+            res.statusMessage = "Malformed project data"
+        } else if (status == 401){
+            res.statusMessage = "Unauthorized - create account to create project"
+        }
         res.json(result);
     })
 };
@@ -50,27 +55,46 @@ exports.details = function (req, res){
 };
 
 exports.update = function (req, res){
-    let Project_data = {
-        "Projectname": req.body.Projectname,
-        "Project_id": req.params.ProjectId
+    let project_data = {
+        "project_id": req.params.id,
+        "open": req.body.opened
     };
-    Project.alter(Project_data, function (result) {
+    Project.update(project_data, function (result, status) {
+        res.status(status);
+        if (status == 400){
+            res.statusMessage = "Malformed request"
+        } else if (status == 401){
+            res.statusMessage = "Unauthorized - create account to update project"
+        } else if (status == 403){
+            res.statusMessage = "Forbidden - unable to update a project you do not own"
+        }
         res.json(result);
     })
 };
 
-exports.delete = function (req, res){
-    Project.remove([req.params.ProjectId.toString()], function (result) {
+exports.updateImage = function (req, res){
+
+    let data = {
+        "imageFile": req.body.,
+        "id": req.params.id
+    };
+    Project.setImage(data, function (result, status) {
+        res.status(status);
+        if (status == 400){
+            res.statusMessage = "Malformed request"
+        } else if (status == 401){
+            res.statusMessage = "Unauthorized - create account to update project"
+        } else if (status == 403){
+            res.statusMessage = "Forbidden - unable to update a project you do not own"
+        }
         res.json(result);
     })
 };
 
 exports.image = function (req, res){
-    return null;
-};
-
-exports.updateImage = function (req, res){
-    return null;
+    Project.getImage(req.params.id, function (result, status) {
+        res.json(result)
+    })
 };
 
 exports.pledge = function (req, res){

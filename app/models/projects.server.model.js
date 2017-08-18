@@ -7,22 +7,22 @@ const db = require('../../config/db.js');
 exports.getAll = function (done) {
     db.get().query('SELECT id, title, subtitle, imageUri FROM Project', function (err, rows) {
         if (err) return done({"ERROR": "Error selecting"});
-        return done(rows);
+        return done(rows, 200);
     })
 };
 
 exports.getDetails = function (project_id, done) {
     db.get().query('SELECT * FROM Project WHERE id = ?', project_id, function (err, projects) {
-        if (err) return done(err);
+        if (err) return done(err, 400);
 
         db.get().query('SELECT * FROM Reward WHERE project = ?', project_id, function (err, rewards) {
-            if (err) return done(err);
+            if (err) return done(err, 400);
 
             db.get().query('SELECT * FROM Creators WHERE project = ?', project_id, function (err, creators) {
-                if (err) return done(err);
+                if (err) return done(err, 400);
 
                 db.get().query('SELECT * FROM Backers WHERE project_id = ?', project_id, function (err, backers) {
-                    if (err) return done(err);
+                    if (err) return done(err, 400);
                     let result = {};
                     let project = {};
                     let data = {};
@@ -33,7 +33,7 @@ exports.getDetails = function (project_id, done) {
                         data.title = projects[i].title;
                         data.subtitle = projects[i].subtitle;
                         data.descrpition = projects[i].description;
-                        data.imageUri = projects[i].imageUri;
+                        data.imageUri = '/api/v1/project/' + project_id + '/image';
                         data.target = projects[i].target;
                         progress.target = projects[i].target;
                         progress.currentPledged = projects[i].currentPledged;
@@ -69,7 +69,7 @@ exports.getDetails = function (project_id, done) {
                         }
                     }
                     result.backers = backers;
-                    done(result);
+                    done(result, 200);
                 });
             });
         });
@@ -79,17 +79,18 @@ exports.getDetails = function (project_id, done) {
 };
 
 exports.insert = function (project_data, done) {
-   // console.log(project);
     let project = project_data;
     let values = [project.title, project.subtitle, project.description, project.imageUri, project.target, 5];
 
-
     db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
         let result = rows;
-        if (err) return done(400, err);
+        if (err) return done(err, 400);
         for (let i = 0; i < project.rewards.length; i++) {
 
-            insertRewards(project, result, i, function (success) {
+            insertRewards(project, result, i, function (success, status) {
+                if (status == 400){
+                    return done(success, 400);
+                }
                 result = success;
                 if (i == project.rewards.length - 1){
                     for (let i = 0; i < project.creators.length; i++) {
@@ -97,7 +98,7 @@ exports.insert = function (project_data, done) {
                         insertCreators(project, result, i, function (success) {
                             result = success;
                             if (i == project.creators.length - 1){
-                                done(result);
+                                done(result, 201);
                             }
                         });
 
@@ -118,10 +119,10 @@ function insertRewards (project, rows, i, success){
 
     db.get().query("INSERT INTO Reward (reward_id, amount, description, project) VALUES (?, ?, ?, ?)", values2, function (err, rewardResult) {
         if (err) {
-            return success(err);
+            return success(err, 400);
         }
         rows.rewards.push(rewardResult);
-        success(rows);
+        success(rows, 201);
     });
 }
 
@@ -132,27 +133,36 @@ function insertCreators (project, rows, i, success){
 
     db.get().query("INSERT INTO Creators (name, user_id, project) VALUES (?, ?, ?)", values2, function (err, rewardResult) {
         if (err) {
-            return success(err);
+            return success(err, 400);
         }
         rows.creators.push(rewardResult);
-        success(rows);
+        success(rows, 201);
     });
 }
 
 
-exports.alter = function (user_data, done) {
-    let values = [user_data.username, user_data.user_id];
+exports.update = function (project_data, done) {
 
-    db.get().query("UPDATE USERS SET username= ? WHERE user_id = ?", values, function (err, result) {
-        if (err) return done(err);
-        done(result);
+    db.get().query("UPDATE Project SET open= ? WHERE id = ?", [project_data.id, project_data.open], function (err, result) {
+        if (err) return done(err, 400);
+        done(result, 201);
     });
 };
 
-exports.remove = function (user_id, done) {
 
-    db.get().query("DELETE FROM USERS WHERE user_id = ?", user_id, function (err, result) {
-        if (err) return done(err);
-        done(result);
+exports.setImage = function (data, done) {
+
+    db.get().query("UPDATE Project SET image= ? WHERE id = ?", [data.imageFile, data.id], function (err, result) {
+        if (err) return done(err, 400);
+        done(result, 201);
+    });
+};
+
+
+exports.getImage = function (data, done) {
+
+    db.get().query("SELECT image FROM Project WHERE id = ?", [data], function (err, result) {
+        if (err) return done(err, 400);
+        done(result, 200);
     });
 };

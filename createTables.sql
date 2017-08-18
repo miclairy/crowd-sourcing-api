@@ -18,12 +18,13 @@ id integer NOT NULL AUTO_INCREMENT,
 title varchar(50) NOT NULL UNIQUE,
 subtitle varchar(200),
 description varchar(200),
-imageUri varchar(1000),
 imageId integer NOT NULL,
+image blob,
 creationDate timestamp DEFAULT NOW(),
 target integer NOT NULL,
 currentPledged integer NOT NULL DEFAULT 0,
 numberOfBackers integer NOT NULL DEFAULT 0,
+open boolean NOT NULL DEFAULT 0,
 PRIMARY KEY (id)
 );
 

@@ -14,10 +14,9 @@ module.exports = function (app) {
       .get(projects.details)
       .put(projects.update);
 
-  app.route(base + '/projects/:id/image')
-      .get(projects.image)
-      .put(projects.updateImage);
-
   app.route(base + '/projects/:id/pledge')
       .post(projects.pledge);
+
+    app.route(base + '/projects/:id/image')
+        .get(projects.image)
 };
