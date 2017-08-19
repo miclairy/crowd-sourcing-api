@@ -153,12 +153,10 @@ exports.update = function (project_data, done) {
 
 exports.setImage = function (data, done) {
 
-    fs.readFile(data.imageFilePath, function (err, image) {
-        db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [image, data.imageFilePath, data.id], function (err, result) {
-            if (err) return done(err, 400);
-            done(result, 200);
+    db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.id], function (err, result) {
+        if (err) return done(err, 400);
+        done(result, 200);
 
-        });
     });
 };
 
@@ -167,9 +165,7 @@ exports.getImage = function (data, done) {
 
     db.get().query("SELECT imageUri FROM Project WHERE id = ?", [data], function (err, result) {
         if (err) return done(err, 400);
-        fs.readFile(result[0].imageUri, function (err, image) {
-            done(result[0].imageUri, 201);
-        });
+        done(result[0].imageUri, 201);
     });
 };
 
