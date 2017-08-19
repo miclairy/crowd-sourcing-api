@@ -32,7 +32,7 @@ module.exports = function (app) {
       .put(projects.update);
 
   app.route(base + '/projects/:id/pledge')
-      .post(projects.pledge);
+      .post(checkToken, projects.pledge);
 
   app.route(base + '/projects/:id/image')
         .get(projects.image);

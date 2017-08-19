@@ -196,5 +196,27 @@ exports.updateRewards = function (user_id, rewards_data, project_id, done){
         }
     });
 
+};
+
+exports.addPledge = function (authId, pledge_data, done) {
+    let rows = [];
+    db.get().query('SELECT * FROM Creators WHERE project = ? && user_id = ?', [pledge_data.project_id, pledge_data.user_id], function (err, creators) {
+        if (err) return done(err, 500);
+        if (creators.length == 0){
+            let values = [pledge_data.user_id, pledge_data.amount, pledge_data.anonymous, pledge_data.project_id];
+            db.get().query('INSERT INTO Backers (user_id, amount, anonymous, project_id) VALUES (?)', [values], function (err, result) {
+                rows.push(result);
+                if (err) return done(err, 400);
+                db.get().query('UPDATE Project SET numberOfBackers = numberOfBackers + 1, ' +
+                    'currentPledged = currentPledged + ? WHERE id = ?', [pledge_data.amount, pledge_data.project_id], function (err, result) {
+                    if (err) return done(err, 400);
+                    rows.push(result);
+                    done(rows, 200);
+                })
+            })
+        } else {
+            return done(creators, 403)
+        }
+    });
 
 };

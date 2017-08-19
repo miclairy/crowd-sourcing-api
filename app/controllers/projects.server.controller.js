@@ -98,7 +98,29 @@ exports.image = function (req, res){
 };
 
 exports.pledge = function (req, res){
-    return null;
+    if (req.authId != req.body.id){
+        res.statusMessage = "Unauthorized - create account to pledge to a project";
+        return res.sendStatus(401)
+    }
+
+    let pledge_data = {
+        "user_id": req.body.id,
+        "amount": req.body.amount,
+        "anonymous": req.body.anonymous,
+        "cardToken": req.body.card.authToken,
+        "project_id": req.params.id
+    };
+
+    Project.addPledge(req.authId, pledge_data, function (result, status) {
+        res.status(status);
+        if (status == 400){
+            res.statusMessage = "bad user, project, or pledge details";
+        }
+        if (status == 403){
+            res.statusMessage = "Forbidden - cannot pledge to own project - this is fraud!";
+        }
+        res.json(result);
+    })
 };
 
 exports.rewards = function (req, res) {

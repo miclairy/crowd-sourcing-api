@@ -6,7 +6,7 @@ VALUES ("Sam", "New Zealand", "sam@gmail.com", "sam"),
 
 INSERT INTO Project (title, subtitle, description, image, imageId, target, currentPledged, numberOfBackers)
 VALUES ("Robot 2000", "2000 robot series", "Awesome robot", LOAD_FILE("/home/cosc/student/cba62/Documents/SENG365/coloured-robot-design_1148-9.jpg"), 1, 1000, 0, 0),
-        ("Cancer chic", "cancer is terrible", "I have cancer help", LOAD_FILE("/home/cosc/student/cba62/Documents/SENG365/092016_childrencancer_THUMB_LARGE.jpg"), 2, 20000, 1, 100);
+        ("Cancer chic", "cancer is terrible", "I have cancer help", LOAD_FILE("/home/cosc/student/cba62/Documents/SENG365/092016_childrencancer_THUMB_LARGE.jpg"), 2, 20000, 100, 1);
 
 INSERT INTO Reward (amount, description, project)
 VALUES (10, "Robot part", 1),
