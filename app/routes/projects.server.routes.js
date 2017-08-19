@@ -6,6 +6,8 @@ const base = '/api/v1';
 const projects = require('../controllers/projects.server.controller');
 
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 
 const checkToken = (req, res, next) => {
@@ -35,7 +37,8 @@ module.exports = function (app) {
       .post(checkToken, projects.pledge);
 
   app.route(base + '/projects/:id/image')
-        .get(projects.image);
+        .get(projects.image)
+        .put(upload.single("Image"), projects.updateImage);
 
   app.route(base + '/projects/:id/rewards')
       .get(projects.rewards)

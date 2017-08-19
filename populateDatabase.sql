@@ -18,6 +18,6 @@ VALUES ("Sam", 1, 1),
         ("Samantha", 4, 2);
 
 INSERT INTO Backers (user_id, amount, project_id)
-VALUES (2, 100, 2)
+VALUES (2, 100, 2);
 
 

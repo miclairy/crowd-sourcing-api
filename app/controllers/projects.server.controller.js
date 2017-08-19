@@ -3,6 +3,7 @@
  */
 
 const Project =  require('../models/projects.server.model');
+var fs = require("fs");
 
 exports.list = function (req, res){
     Project.getAll(function (result) {
@@ -75,7 +76,7 @@ exports.update = function (req, res){
 exports.updateImage = function (req, res){
 
     let data = {
-        "imageFile": req.body,
+        "imageFilePath": req.file.path,
         "id": req.params.id
     };
     Project.setImage(data, function (result, status) {
@@ -92,8 +93,12 @@ exports.updateImage = function (req, res){
 };
 
 exports.image = function (req, res){
-    Project.getImage(req.params.id, function (result, status) {
-        res.json(result)
+    Project.getImage(req.params.id, function (uri, status) {
+        res.status(status);
+        fs.readFile(uri, (err, data) => {
+            res.set({'Content-Type': 'image/png'});
+            res.send(data);
+        });
     })
 };
 

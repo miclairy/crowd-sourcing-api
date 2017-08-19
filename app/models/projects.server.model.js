@@ -3,6 +3,7 @@
  */
 
 const db = require('../../config/db.js');
+const fs = require('fs');
 
 exports.getAll = function (done) {
     db.get().query('SELECT id, title, subtitle, imageUri FROM Project', function (err, rows) {
@@ -33,7 +34,7 @@ exports.getDetails = function (project_id, done) {
                         data.title = projects[i].title;
                         data.subtitle = projects[i].subtitle;
                         data.descrpition = projects[i].description;
-                        data.imageUri = '/api/v1/project/' + project_id + '/image';
+                        data.imageUri = projects[i].imageUri;
                         data.target = projects[i].target;
                         progress.target = projects[i].target;
                         progress.currentPledged = projects[i].currentPledged;
@@ -152,18 +153,23 @@ exports.update = function (project_data, done) {
 
 exports.setImage = function (data, done) {
 
-    db.get().query("UPDATE Project SET image= ? WHERE id = ?", [data.imageFile, data.id], function (err, result) {
-        if (err) return done(err, 400);
-        done(result, 201);
+    fs.readFile(data.imageFilePath, function (err, image) {
+        db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [image, data.imageFilePath, data.id], function (err, result) {
+            if (err) return done(err, 400);
+            done(result, 200);
+
+        });
     });
 };
 
 
 exports.getImage = function (data, done) {
 
-    db.get().query("SELECT image FROM Project WHERE id = ?", [data], function (err, result) {
+    db.get().query("SELECT imageUri FROM Project WHERE id = ?", [data], function (err, result) {
         if (err) return done(err, 400);
-        done(result, 200);
+        fs.readFile(result[0].imageUri, function (err, image) {
+            done(result[0].imageUri, 201);
+        });
     });
 };
 
