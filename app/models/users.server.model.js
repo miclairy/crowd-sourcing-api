@@ -35,12 +35,23 @@ exports.login = function(username, password, done){
             "id": rows[0].user_id,
             "token": token
         };
+        db.get().query("INSERT INTO Authorisation (user_id, token) VALUES (?)", [[result.id, result.token]], function (err, rows) {
+            if (err) return done(err, 500);
+        });
         done(result, 200);
     })
 };
 
 
-exports.logout = function(done){
-    done('', 500);
+exports.logout = function(authId, token, done){
+    db.get().query("DELETE FROM Authorisation WHERE user_id = ? && token = ?", [authId, token], function (err, rows) {
+        if (err) return done(err, 500);
+        if (rows.affectedRows == 0){
+            return done(rows, 401)
+        }
+        done(rows, 200);
+
+    })
+
 };
 

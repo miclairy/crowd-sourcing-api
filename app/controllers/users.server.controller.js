@@ -50,7 +50,7 @@ exports.loginUser = function (req, res) {
 
 exports.logoutUser = function (req, res) {
 
-    Users.logout(req.query.username, req.query.password, function (result, status) {
+    Users.logout(req.authId, req.headers.authorization, function (result, status) {
         res.status(status);
         if (status == 401){
             res.statusMessage = "Unauthorized - already logged out";

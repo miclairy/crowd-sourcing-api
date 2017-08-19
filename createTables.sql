@@ -1,9 +1,9 @@
+DROP TABLE Authorisation;
 DROP TABLE Backers;
 DROP TABLE Creators;
 DROP TABLE Reward;
 DROP TABLE Project;
 DROP TABLE Users;
-
 
 CREATE TABLE Users (
 user_id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -56,4 +56,10 @@ project_id integer NOT NULL,
 FOREIGN KEY (project_id) REFERENCES Project(id),
 FOREIGN KEY (user_id) REFERENCES Users(user_id),
 PRIMARY KEY (pledge_id)
+);
+
+CREATE TABLE Authorisation(
+token varchar(2000) NOT NULL PRIMARY KEY,
+user_id integer NOT NULL,
+FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
