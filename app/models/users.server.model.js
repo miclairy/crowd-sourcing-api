@@ -55,3 +55,50 @@ exports.logout = function(authId, token, done){
 
 };
 
+exports.update = function (user_data, done) {
+    checkUserIsActive(id, function (active) {
+        if (active == 1) {
+            let values = [user_data.username, user_data.location, user_data.email, user_data.password, user_data.id];
+            db.get().query("UPDATE Users SET username = ?, location = ?, email = ?, password = ? WHERE user_id = ?", values, function (err, rows) {
+                if (err) return done(err, 500);
+                if (rows.affectedRows == 0) {
+                    return done(rows, 404)
+                }
+                done(rows, 200);
+            })
+        } else {
+            return done("[]", 404)
+        }
+    })
+};
+
+
+function checkUserIsActive(id, active) {
+    db.get().query("SELECT active FROM Users WHERE user_id = ?", id, function (err, rows) {
+        active(rows[0].active);
+    });
+}
+
+exports.deactivate = function (token, id, done) {
+
+    checkUserIsActive(id, function (active) {
+        if (active == 1){
+            db.get().query("UPDATE Users SET active = false WHERE user_id = ?", id, function (err, rows) {
+                db.get().query("DELETE FROM Authorisation WHERE user_id = ? && token = ?", [id, token], function (err, rows) {
+                    if (err) return done(err, 500);
+                    if (err) return done(err, 500);
+                    if (rows.affectedRows == 0) {
+                        return done(rows, 404)
+                    }
+                    done(rows, 200);
+                });
+
+            })
+        } else {
+            return done("[]", 404)
+        }
+    })
+
+};
+
+

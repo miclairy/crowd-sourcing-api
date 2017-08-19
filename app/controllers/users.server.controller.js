@@ -59,5 +59,54 @@ exports.logoutUser = function (req, res) {
     })
 };
 
+exports.update = function (req, res) {
+
+    if (req.authId != req.params.id){
+        res.statusMessage = "Forbidden - account not owned";
+        return res.sendStatus(403)
+    }
+    let user_data = {
+        "id": req.params.id,
+        "username" : req.body.user.username,
+        "location": req.body.user.location,
+        "email": req.body.user.email,
+        "password": req.body.password
+    };
+
+    Users.update(user_data, function (result, status) {
+        res.status(status);
+        if (status == 401){
+            res.statusMessage = "Unauthorized - not logged in";
+        }
+
+        if (status == 404){
+            res.statusMessage = "User not found";
+        }
+        res.json(result);
+    })
+};
+
+exports.delete = function (req, res) {
+
+    if (req.authId != req.params.id){
+        res.statusMessage = "Forbidden - account not owned";
+        return res.sendStatus(403)
+    }
+
+    Users.deactivate(req.headers.authorization, req.params.id, function (result, status) {
+        res.status(status);
+        if (status == 401){
+            res.statusMessage = "Unauthorized - not logged in";
+        }
+        if (status == 404){
+            res.statusMessage = "User not found";
+        }
+        if (status == 200){
+            res.statusMessage = "User deleted";
+        }
+        res.json(result);
+    })
+};
+
 
 

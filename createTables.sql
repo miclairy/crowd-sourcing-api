@@ -10,7 +10,8 @@ user_id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
 username varchar(20) NOT NULL,
 location varchar(20),
 email varchar(100) NOT NULL,
-password varchar(100) NOT NULL
+password varchar(100) NOT NULL,
+active boolean DEFAULT true
 );
 
 CREATE TABLE Project (

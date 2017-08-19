@@ -14,6 +14,8 @@ const checkToken = (req, res, next) => {
       req.authId = decoded.user_id;
       next()
     } else {
+        res.status(401);
+        res.statusMessage = "Unauthorized - not logged in";
         res.json(err);
     }
   });
@@ -27,9 +29,11 @@ module.exports = function (app) {
       .post(users.loginUser);
 
   app.route(base + '/users/logout')
-        .post(checkToken, users.logoutUser);
+      .post(checkToken, users.logoutUser);
 
   app.route(base + '/users/:id')
-      .get(users.getUser);
+      .get(users.getUser)
+      .put(checkToken, users.update)
+      .delete(checkToken, users.delete);
 
 };

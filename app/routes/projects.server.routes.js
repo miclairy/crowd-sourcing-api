@@ -5,22 +5,19 @@
 const base = '/api/v1';
 const projects = require('../controllers/projects.server.controller');
 
-function isValidToken(x) {
-  x = "000";
-    if (x == "000"){
-      return true;
-    }
-    return false;
-}
+const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 
 const checkToken = (req, res, next) => {
-  if (isValidToken(req.get('X-Authorization'))){
-    next();
-  } else {
-    res.statusMessage = "Unauthorized - create account to create project";
-    res.sendStatus(401);
-  }
+
+    jwt.verify(req.headers.authorization, 'RESTFULAPIs', function (err, decoded) {
+        if (!err){
+            req.authId = decoded.user_id;
+            next()
+        } else {
+            res.json(err);
+        }
+    });
 };
 
 module.exports = function (app) {
