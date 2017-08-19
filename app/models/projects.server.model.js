@@ -80,9 +80,9 @@ exports.getDetails = function (project_id, done) {
 
 exports.insert = function (project_data, done) {
     let project = project_data;
-    let values = [project.title, project.subtitle, project.description, project.imageUri, project.target, 5];
+    let values = [project.title, project.subtitle, project.description, project.target, 5];
 
-    db.get().query("INSERT INTO Project (title, subtitle, description, imageUri, target, imageId) VALUES (?, ?, ?, ?, ?, ?)", values, function (err, rows) {
+    db.get().query("INSERT INTO Project (title, subtitle, description, target, imageId) VALUES (?, ?, ?, ?, ?)", values, function (err, rows) {
         let result = rows;
         if (err) return done(err, 400);
         for (let i = 0; i < project.rewards.length; i++) {

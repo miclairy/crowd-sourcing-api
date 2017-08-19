@@ -69,13 +69,13 @@ exports.update = function (req, res){
             res.statusMessage = "Forbidden - unable to update a project you do not own"
         }
         res.json(result);
-    })
+    });
 };
 
 exports.updateImage = function (req, res){
 
     let data = {
-        "imageFile": req.body.,
+        "imageFile": req.body,
         "id": req.params.id
     };
     Project.setImage(data, function (result, status) {

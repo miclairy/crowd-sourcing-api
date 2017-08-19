@@ -10,7 +10,6 @@ const projects = require('../app/controllers/projects.server.controller');
 
 module.exports = function(){
     const app = express();
-
     app.route(base + '/projects/:id/image')
         .put(projects.updateImage);
 
@@ -20,6 +19,7 @@ module.exports = function(){
     ));
 
     require('../app/routes/projects.server.routes.js')(app);
+    require('../app/routes/users.server.routes.js')(app);
 
     return app;
 };
