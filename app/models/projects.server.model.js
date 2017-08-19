@@ -166,3 +166,35 @@ exports.getImage = function (data, done) {
         done(result, 200);
     });
 };
+
+exports.getRewards = function (project_id, done) {
+    db.get().query('SELECT * FROM Reward WHERE project = ?', project_id, function (err, result) {
+        if (err) return done(err, 500);
+        done(result, 200)
+    });
+};
+
+exports.updateRewards = function (user_id, rewards_data, project_id, done){
+    let result = [];
+    db.get().query('SELECT * FROM Creators WHERE project = ? && user_id = ?', [project_id, user_id], function (err, creators) {
+        if (err) return done(err, 500);
+        if (creators.length == 0){
+            return done(creators, 403);
+        } else {
+            for (let i = 0; i < rewards_data.length; i++) {
+                let values = [[rewards_data[i].amount, rewards_data[i].description, project_id, rewards_data[i].id],
+                    rewards_data[i].amount, rewards_data[i].description, project_id, rewards_data[i].id];
+                db.get().query('INSERT INTO Reward (amount, description, project, reward_id) VALUES (?) ' +
+                    'ON DUPLICATE KEY UPDATE amount = ?, description = ?', values, function (err, rows) {
+                    result.push(rows);
+                    if (err) return done(err, 400);
+                    if (i == rewards_data.length - 1){
+                        done(result, 201);
+                    }
+                });
+            }
+        }
+    });
+
+
+};

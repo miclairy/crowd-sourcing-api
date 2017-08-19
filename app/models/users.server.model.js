@@ -56,7 +56,7 @@ exports.logout = function(authId, token, done){
 };
 
 exports.update = function (user_data, done) {
-    checkUserIsActive(id, function (active) {
+    checkUserIsActive(user_data.id, function (active) {
         if (active == 1) {
             let values = [user_data.username, user_data.location, user_data.email, user_data.password, user_data.id];
             db.get().query("UPDATE Users SET username = ?, location = ?, email = ?, password = ? WHERE user_id = ?", values, function (err, rows) {

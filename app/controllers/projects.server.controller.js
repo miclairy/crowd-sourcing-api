@@ -101,3 +101,33 @@ exports.pledge = function (req, res){
     return null;
 };
 
+exports.rewards = function (req, res) {
+  Project.getRewards(req.params.id, function (result, status) {
+      res.json(result);
+  })  
+};
+
+exports.updateRewards = function(req, res){
+
+    rewards_data = [];
+    for (let i = 0; i < req.body.length; i++) {
+        reward = {
+            "id": req.body[i].id,
+            "amount": req.body[i].amount,
+            "description": req.body[i].description
+        };
+        rewards_data.push(reward);
+    }
+
+    Project.updateRewards(req.authId, rewards_data, req.params.id, function (result, status) {
+        res.status(status);
+        if (status == 400){
+            res.statusMessage = "Malformed request";
+        }
+        if (status == 403){
+            res.statusMessage = "Forbidden - unable to update a project you do not own";
+        }
+        res.json(result);
+    })
+};
+

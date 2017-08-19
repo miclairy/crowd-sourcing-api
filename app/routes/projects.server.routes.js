@@ -15,6 +15,8 @@ const checkToken = (req, res, next) => {
             req.authId = decoded.user_id;
             next()
         } else {
+            res.status(401);
+            res.statusMessage = "Unauthorized - create account to update project";
             res.json(err);
         }
     });
@@ -32,6 +34,10 @@ module.exports = function (app) {
   app.route(base + '/projects/:id/pledge')
       .post(projects.pledge);
 
-    app.route(base + '/projects/:id/image')
-        .get(projects.image)
+  app.route(base + '/projects/:id/image')
+        .get(projects.image);
+
+  app.route(base + '/projects/:id/rewards')
+      .get(projects.rewards)
+      .put(checkToken, projects.updateRewards)
 };
