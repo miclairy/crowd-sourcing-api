@@ -10,5 +10,8 @@
     "body-parser": "1.17.2",
     "jsonwebtoken": "^7.4.3",
     "multer": "^1.3.0"
+  },
+  "devDependencies": {
+    "sleep": "^5.1.1"
   }
 }
