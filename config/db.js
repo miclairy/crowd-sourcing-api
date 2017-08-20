@@ -4,6 +4,7 @@
 
 const mysql = require('mysql');
 const fs = require("fs");
+const sleep = require("sleep")
 
 const state = {
     pool: null
@@ -45,7 +46,7 @@ exports.connect = function (done) {
 };
 
 async function conn(done) {
-
+    sleep.sleep(2);
     state.pool.getConnection(function (err, connection) {
         if (err) {
             conn(done);
