@@ -45,7 +45,7 @@ exports.connect = function (done) {
 
 };
 
-function conn(done) {
+async function conn(done) {
     sleep.sleep(2);
     state.pool.getConnection(function (err, connection) {
         if (err) {
