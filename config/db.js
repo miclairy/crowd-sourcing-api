@@ -22,12 +22,21 @@ exports.connect = function (done) {
 
   conn(function (connection) {
      fs.readFile("createTables.sql", "utf-8", function (er, tablesSql) {
-         //fs.readFile("populateDatabase.sql", "utf-8", function (er, dataSql) {
              connection.query(tablesSql, function (err, result) {
                  if (err){
                      done(err);
                  }
-                 done();
+                 connection.query("SELECT * FROM Users", function (err, rows) {
+                     if (rows.length == 0){
+                         fs.readFile("populateDatabase.sql", "utf-8", function (er, dataSql) {
+                             connection.query(dataSql, function (err, result) {
+                                 console.log(err);
+                             });
+                         });
+                     }
+                 });
+
+                     done();
              })
          });
 
