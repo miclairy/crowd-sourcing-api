@@ -46,7 +46,7 @@ exports.create = function (req, res){
         } else if (status == 401){
             res.statusMessage = "Unauthorized - create account to create project"
         }
-        res.json(result);
+        res.end(result.toString());
     })
 };
 
@@ -58,17 +58,17 @@ exports.details = function (req, res){
 
 exports.update = function (req, res){
     let project_data = {
-        "project_id": req.params.id,
-        "open": req.body.opened
+        "id": req.params.id,
+        "open": req.body.open
     };
-    Project.update(project_data, function (result, status) {
+    Project.update(project_data, req.authId, function (result, status) {
         res.status(status);
         if (status == 400){
             res.statusMessage = "Malformed request"
-        } else if (status == 401){
-            res.statusMessage = "Unauthorized - create account to update project"
         } else if (status == 403){
             res.statusMessage = "Forbidden - unable to update a project you do not own"
+        } else if (status == 201){
+            res.statusMessage = "OK"
         }
         res.json(result);
     });

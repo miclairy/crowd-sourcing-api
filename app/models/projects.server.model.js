@@ -49,7 +49,7 @@ exports.getDetails = function (project_id, done) {
                     data.creators = [];
                     for (let j = 0; j < creators.length; j++) {
                         let creator = {};
-                        creator.id = creators[j].id;
+                        creator.user_id = creators[j].id;
                         creator.name = creators[j].name;
                         data.creators.push(creator);
                     }
@@ -86,16 +86,17 @@ exports.getDetails = function (project_id, done) {
 
 exports.insert = function (project_data, done) {
     let project = project_data;
-    let values = [project.title, project.subtitle, project.description, project.target, 5];
+    let values = [project.title, project.subtitle, project.description, project.target, project.imageUri];
 
-    db.get().query("INSERT INTO Project (title, subtitle, description, target, imageId) VALUES (?, ?, ?, ?, ?)", values, function (err, rows) {
+    db.get().query("INSERT INTO Project (title, subtitle, description, target, imageUri) VALUES (?)", [values], function (err, rows) {
         let result = rows;
-        if (err) return done(err, 400);
+        let project_id = rows.insertId;
+        if (err) return done(err, 500);
         for (let i = 0; i < project.rewards.length; i++) {
 
             insertRewards(project, result, i, function (success, status) {
-                if (status == 400){
-                    return done(success, 400);
+                if (status == 500){
+                    return done(success, 500);
                 }
                 result = success;
                 if (i == project.rewards.length - 1){
@@ -104,7 +105,7 @@ exports.insert = function (project_data, done) {
                         insertCreators(project, result, i, function (success) {
                             result = success;
                             if (i == project.creators.length - 1){
-                                done(result, 201);
+                                done(project_id, 201);
                             }
                         });
 
@@ -125,7 +126,7 @@ function insertRewards (project, rows, i, success){
 
     db.get().query("INSERT INTO Reward (reward_id, amount, description, project) VALUES (?, ?, ?, ?)", values2, function (err, rewardResult) {
         if (err) {
-            return success(err, 400);
+            return success(err, 500);
         }
         rows.rewards.push(rewardResult);
         success(rows, 201);
@@ -139,7 +140,7 @@ function insertCreators (project, rows, i, success){
 
     db.get().query("INSERT INTO Creators (name, user_id, project) VALUES (?, ?, ?)", values2, function (err, rewardResult) {
         if (err) {
-            return success(err, 400);
+            return success(err, 500);
         }
         rows.creators.push(rewardResult);
         success(rows, 201);
@@ -147,11 +148,17 @@ function insertCreators (project, rows, i, success){
 }
 
 
-exports.update = function (project_data, done) {
-
-    db.get().query("UPDATE Project SET open= ? WHERE id = ?", [project_data.id, project_data.open], function (err, result) {
-        if (err) return done(err, 400);
-        done(result, 201);
+exports.update = function (project_data, authId, done) {
+    db.get().query('SELECT * FROM Creators WHERE project = ? && user_id = ?', [project_data.id, authId], function (err, creators) {
+        if (err) return done(err, 500);
+        if (creators.length == 0) {
+            return done(creators, 403);
+        } else {
+            db.get().query("UPDATE Project SET open= ? WHERE id = ?", [project_data.open, project_data.id], function (err, result) {
+                if (err) return done(err, 400);
+                done(result, 201);
+            });
+        }
     });
 };
 
@@ -165,7 +172,7 @@ exports.setImage = function (data, done) {
 
             db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.id], function (err, result) {
                 if (err) return done(err, 400);
-                done(result, 200);
+                done(result, 201);
 
             });
         }
@@ -177,7 +184,7 @@ exports.getImage = function (data, done) {
 
     db.get().query("SELECT imageUri FROM Project WHERE id = ?", [data], function (err, result) {
         if (err) return done(err, 400);
-        done(result[0].imageUri, 201);
+        done(result[0].imageUri, 200);
     });
 };
 
