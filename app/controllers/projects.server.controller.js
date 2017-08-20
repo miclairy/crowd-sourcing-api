@@ -6,7 +6,8 @@ const Project =  require('../models/projects.server.model');
 var fs = require("fs");
 
 exports.list = function (req, res){
-    Project.getAll(function (result) {
+
+    Project.getAll(req.query.startIndex, req.query.count, function (result) {
         res.json(result);
     });
 };
@@ -77,14 +78,13 @@ exports.updateImage = function (req, res){
 
     let data = {
         "imageFilePath": req.file.path,
-        "id": req.params.id
+        "project_id": req.params.id,
+        "authId" : req.authId
     };
     Project.setImage(data, function (result, status) {
         res.status(status);
         if (status == 400){
             res.statusMessage = "Malformed request"
-        } else if (status == 401){
-            res.statusMessage = "Unauthorized - create account to update project"
         } else if (status == 403){
             res.statusMessage = "Forbidden - unable to update a project you do not own"
         }

@@ -5,11 +5,16 @@
 const db = require('../../config/db.js');
 const fs = require('fs');
 
-exports.getAll = function (done) {
-    db.get().query('SELECT id, title, subtitle, imageUri FROM Project', function (err, rows) {
-        if (err) return done({"ERROR": "Error selecting"});
-        return done(rows, 200);
-    })
+exports.getAll = function (startIndex, count, done) {
+    if (count > 0) {
+        db.get().query('SELECT id, title, subtitle, imageUri FROM Project LIMIT ?, ?',
+            [parseInt(startIndex), parseInt(count) + parseInt(startIndex)], function (err, rows) {
+                if (err) return done({"ERROR": "Error selecting"});
+                return done(rows, 200);
+            })
+    } else {
+        return done([], 200);
+    }
 };
 
 exports.getDetails = function (project_id, done) {
@@ -152,11 +157,18 @@ exports.update = function (project_data, done) {
 
 
 exports.setImage = function (data, done) {
+    db.get().query('SELECT * FROM Creators WHERE project = ? && user_id = ?', [data.project_id, data.authId], function (err, creators) {
+        if (err) return done(err, 500);
+        if (creators.length == 0) {
+            return done(creators, 403);
+        } else {
 
-    db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.id], function (err, result) {
-        if (err) return done(err, 400);
-        done(result, 200);
+            db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.id], function (err, result) {
+                if (err) return done(err, 400);
+                done(result, 200);
 
+            });
+        }
     });
 };
 

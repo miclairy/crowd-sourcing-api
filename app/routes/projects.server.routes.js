@@ -38,7 +38,7 @@ module.exports = function (app) {
 
   app.route(base + '/projects/:id/image')
         .get(projects.image)
-        .put(upload.single("Image"), projects.updateImage);
+        .put(checkToken, upload.single("Image"), projects.updateImage);
 
   app.route(base + '/projects/:id/rewards')
       .get(projects.rewards)
