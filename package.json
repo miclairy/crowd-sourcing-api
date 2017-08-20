@@ -2,7 +2,7 @@
   "name": "application-name",
   "version": "0.0.1",
   "scripts": {
-    "start": "node test.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "mysql": "^2.13.0",
