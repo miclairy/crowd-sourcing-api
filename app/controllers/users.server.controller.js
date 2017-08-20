@@ -25,17 +25,22 @@ exports.create = function (req, res){
 };
 
 exports.getUser = function (req, res) {
+    if (!isNaN(req.params.id)) {
 
-    Users.user(req.params.id, function (result, status) {
-        res.status(status);
-        if (status == 401){
-            res.statusMessage = "Invalid id supplied";
-        }
-        if (status == 404){
-            res.statusMessage = "User not found";
-        }
-        res.json(result);
-    })
+        Users.user(req.params.id, function (result, status) {
+            res.status(status);
+            if (status == 401) {
+                res.statusMessage = "Invalid id supplied";
+            }
+            if (status == 404) {
+                res.statusMessage = "User not found";
+            }
+            res.json(result);
+        })
+    } else {
+        res.statusMessage = "Malformed project data";
+        res.sendStatus(400);
+    }
 
 };
 

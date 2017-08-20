@@ -170,7 +170,7 @@ exports.setImage = function (data, done) {
             return done(creators, 403);
         } else {
 
-            db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.id], function (err, result) {
+            db.get().query("UPDATE Project SET imageUri = ? WHERE id = ?", [data.imageFilePath, data.project_id], function (err, result) {
                 if (err) return done(err, 400);
                 done(result, 201);
 
@@ -223,6 +223,7 @@ exports.updateRewards = function (user_id, rewards_data, project_id, done){
                     }
                 });
             }
+            return done([], 400);
         }
     });
 

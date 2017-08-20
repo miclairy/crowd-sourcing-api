@@ -5,7 +5,6 @@
 const base = '/api/v1';
 const projects = require('../controllers/projects.server.controller');
 const authentication = require('../controllers/authenication.server.controller');
-const bodyParser = require('body-parser');
 
 const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -17,7 +16,7 @@ module.exports = function (app) {
 
   app.route(base + '/projects/:id')
       .get(projects.details)
-      .put(bodyParser.json, authentication.checkUpdateToken, projects.update);
+      .put(authentication.checkUpdateToken, projects.update);
 
   app.route(base + '/projects/:id/pledge')
       .post(authentication.checkPledgeToken, projects.pledge);
@@ -28,5 +27,5 @@ module.exports = function (app) {
 
   app.route(base + '/projects/:id/rewards')
       .get(projects.rewards)
-      .put(authentication.checkUpdateToken, projects.updateRewards)
+      .put(authentication.checkUpdateToken, projects.updateRewards);
 };
