@@ -49,7 +49,7 @@ exports.getDetails = function (project_id, done) {
                     data.creators = [];
                     for (let j = 0; j < creators.length; j++) {
                         let creator = {};
-                        creator.user_id = creators[j].id;
+                        creator.id = creators[j].id;
                         creator.name = creators[j].name;
                         data.creators.push(creator);
                     }
@@ -67,14 +67,14 @@ exports.getDetails = function (project_id, done) {
                     result.progress = progress;
 
                     result.backers = [];
-                    for (let j = 0; j < rewards.length; j++) {
+                    for (let j = 0; j < backers.length; j++) {
                         let backer = {};
-                        if (backer.anonymous == 0) {
-                            backer.name = backers[j];
-                            backer.amount = backers[j];
+                        backer.name = backers[j].user_id;
+                        backer.amount = backers[j].amount;
+                        if (!backers[j].anonymous) {
+                            result.backers.push(backer);
                         }
                     }
-                    result.backers = backers;
                     done(result, 200);
                 });
             });
@@ -189,8 +189,17 @@ exports.getImage = function (data, done) {
 };
 
 exports.getRewards = function (project_id, done) {
-    db.get().query('SELECT * FROM Reward WHERE project = ?', project_id, function (err, result) {
+    db.get().query('SELECT * FROM Reward WHERE project = ?', project_id, function (err, rows) {
         if (err) return done(err, 500);
+        let result = [];
+        for (let row of rows){
+            let reward = {
+                "id" : row.reward_id,
+                "amount" : row.amount,
+                "description" : row.description
+            };
+            result.push(reward);
+        }
         done(result, 200)
     });
 };

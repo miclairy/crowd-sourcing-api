@@ -7,7 +7,7 @@ DROP TABLE Users;
 
 CREATE TABLE Users (
 user_id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
-username varchar(20) NOT NULL,
+username varchar(20) NOT NULL UNIQUE,
 location varchar(20),
 email varchar(100) NOT NULL,
 password varchar(100) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE Backers (
 pledge_id integer NOT NULL AUTO_INCREMENT,
 user_id integer NOT NULL,
 amount integer NOT NULL,
-anonymous boolean NOT NULL DEFAULT 1,
+anonymous boolean NOT NULL DEFAULT false,
 project_id integer NOT NULL,
 FOREIGN KEY (project_id) REFERENCES Project(id),
 FOREIGN KEY (user_id) REFERENCES Users(user_id),

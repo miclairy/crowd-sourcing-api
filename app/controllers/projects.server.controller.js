@@ -3,7 +3,7 @@
  */
 
 const Project =  require('../models/projects.server.model');
-var fs = require("fs");
+const fs = require("fs");
 
 exports.list = function (req, res){
 
@@ -39,6 +39,7 @@ exports.create = function (req, res){
         "rewards" : rewards,
         "creators" : creators
     };
+
     Project.insert(project_data, function (result, status) {
         res.status(status);
         if (status == 400){
@@ -87,6 +88,8 @@ exports.updateImage = function (req, res){
             res.statusMessage = "Malformed request"
         } else if (status == 403){
             res.statusMessage = "Forbidden - unable to update a project you do not own"
+        } else if (status == 201){
+            res.statusMessage = "OK"
         }
         res.json(result);
     })
@@ -153,6 +156,9 @@ exports.updateRewards = function(req, res){
         }
         if (status == 403){
             res.statusMessage = "Forbidden - unable to update a project you do not own";
+        }
+        if (status == 201){
+            res.statusMessage = "OK"
         }
         res.json(result);
     })

@@ -17,7 +17,10 @@ exports.create = function (req, res){
 
     Users.insert(user_data, function (result, status) {
         res.status(status);
-        res.json(result);
+        if (status == 201){
+            res.statusMessage = "OK";
+        }
+        res.end(result.toString());
     })
 };
 

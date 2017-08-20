@@ -10,7 +10,8 @@ exports.insert = function (user_data, done) {
 
     db.get().query("INSERT INTO Users (username, location, email, password) VALUES (?, ?, ?, ?)", values, function (err, rows) {
         if (err) return done(err, 400);
-        done(rows, 200);
+        let id = rows.insertId;
+        done(id, 201);
     });
 };
 
@@ -20,7 +21,13 @@ exports.user = function (user_id, done) {
         if (rows.length == 0){
             return done(rows, 404);
         }
-        done(rows, 200);
+        let user = {
+            "id": rows[0].user_id,
+            "username": rows[0].username,
+            "location": rows[0].location,
+            "email": rows[0].email
+        };
+        done(user, 200);
     });
 };
 
