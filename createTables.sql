@@ -1,11 +1,7 @@
-DROP TABLE Authorisation;
-DROP TABLE Backers;
-DROP TABLE Creators;
-DROP TABLE Reward;
-DROP TABLE Project;
-DROP TABLE Users;
+CREATE DATABASE IF NOT EXISTS Assignment1;
+USE Assignment1;
 
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
 user_id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
 username varchar(20) NOT NULL UNIQUE,
 location varchar(20),
@@ -14,7 +10,7 @@ password varchar(100) NOT NULL,
 active boolean DEFAULT true
 );
 
-CREATE TABLE Project (
+CREATE TABLE IF NOT EXISTS Project (
 id integer NOT NULL AUTO_INCREMENT,
 title varchar(50) NOT NULL UNIQUE,
 subtitle varchar(200),
@@ -29,7 +25,7 @@ open boolean NOT NULL DEFAULT false,
 PRIMARY KEY (id)
 );
 
-CREATE TABLE Reward (
+CREATE TABLE IF NOT EXISTS Reward (
 reward_id integer NOT NULL AUTO_INCREMENT,
 amount integer NOT NULL,
 description varchar(200),
@@ -38,7 +34,7 @@ PRIMARY KEY (reward_id),
 FOREIGN KEY (project) REFERENCES Project(id)
 );
 
-CREATE TABLE Creators (
+CREATE TABLE IF NOT EXISTS Creators (
 id integer NOT NULL AUTO_INCREMENT,
 name varchar(30) NOT NULL,
 user_id integer,
@@ -48,7 +44,7 @@ FOREIGN KEY (project) REFERENCES Project(id),
 PRIMARY KEY (id)
 );
 
-CREATE TABLE Backers (
+CREATE TABLE IF NOT EXISTS Backers (
 pledge_id integer NOT NULL AUTO_INCREMENT,
 user_id integer NOT NULL,
 amount integer NOT NULL,
@@ -59,7 +55,7 @@ FOREIGN KEY (user_id) REFERENCES Users(user_id),
 PRIMARY KEY (pledge_id)
 );
 
-CREATE TABLE Authorisation(
+CREATE TABLE IF NOT EXISTS Authorisation(
 token varchar(2000) NOT NULL PRIMARY KEY,
 user_id integer NOT NULL,
 FOREIGN KEY (user_id) REFERENCES Users(user_id)

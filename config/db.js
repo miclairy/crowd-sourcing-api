@@ -15,18 +15,15 @@ exports.connect = function (done) {
       password: "secret",
       host: process.env.SENG365_MYSQL_HOST || 'localhost',
       port: process.env.SENG365_MYSQL_PORT || 6033,
-      database: "Assignment1",
+      database: "mysql",
       multipleStatements: true
   });
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
   conn(function (connection) {
      fs.readFile("createTables.sql", "utf-8", function (er, tablesSql) {
-         fs.readFile("populateDatabase.sql", "utf-8", function (er, dataSql) {
-             connection.query(tablesSql + " " + dataSql, function (err, result) {
+         //fs.readFile("populateDatabase.sql", "utf-8", function (er, dataSql) {
+             connection.query(tablesSql, function (err, result) {
                  if (err){
                      done(err);
                  }
@@ -37,14 +34,13 @@ function sleep(ms) {
       });
 
 
-  });
+ // });
 
 
 };
 
 async function conn(done) {
 
-    await sleep(2000);
     state.pool.getConnection(function (err, connection) {
         if (err) {
             conn(done);
