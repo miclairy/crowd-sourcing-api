@@ -16,7 +16,7 @@ exports.connect = function (done) {
       port: process.env.SENG365_MYSQL_PORT || 6033,
       user: 'root',
       password: "secret",
-      database: "mysql",
+      database: "Assignment1",
       multipleStatements: true
   });
 
