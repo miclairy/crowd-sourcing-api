@@ -1,4 +1,4 @@
-# crowd-sourcing-api
+# Crowd Sourcing Api
 crowd sourcing api for university to use with the crowd sourcing website
 
 To run:
