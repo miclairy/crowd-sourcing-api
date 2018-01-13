@@ -1,10 +1,7 @@
 # Crowd Sourcing Api
-crowd sourcing api for university to use with the crowd sourcing website
+crowd sourcing api for university to use with the crowd sourcing website. However this version doesn't have CORS enabled and so doesn't work with the crwod sourcing website.
 
 To run:
-* Open database mysql.
-* Run back end api.
-* Open this project with a browser.
-    
-Use node.js to build
+* Open mysql database.
+* Run with npm start
 
